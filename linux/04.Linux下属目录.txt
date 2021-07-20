@@ -1,0 +1,17 @@
+Linux常见目录说明
+
+    /bin（binaries），可执行二进制文件的目录
+    /etc（etcetera），存放系统管理和配置文件
+    /home（），存放所有用户文件的根目录
+    /usr（unix shared resources）
+    /opt，额外安装的可选应用程序包所放置的位置
+    /proc，虚拟文件系统目录，是系统内存的映射
+    /root，超级用户的主目录
+    /sbin（super user binaries），存放二进制可执行文件
+    /dev（devices），存放设备文件
+    /mnt（mount），系统管理员安装临时文件系统的安装点，可以让用户临时挂载其他文件系统
+    /boot，存放系统引导时使用的各种文件
+    /lib（library），文件系统程序运行所需要的共享库及内核模块
+    /tmp（temporary），存放各种临时文件
+    /var（variable），存放运行时需要改变数据的文件
+    /lost+found

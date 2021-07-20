@@ -1,0 +1,19 @@
+常用Linux命令的基本使用
+
+    ls                           list                                查看当前文件夹下的内容
+    pwd                      print work directory     查看当前所在文件夹
+    cd [目录名]            change directory          切换文件夹
+    touch [文件名]       touch                           新建文件
+    mkdir [目录名]       make directory             创建文件夹
+    rm [文件名]            remove                        删除指定文件夹
+    clear                       clear                            清屏
+
+Linux终端命令格式：command [-options] [parameter]
+    说明：
+        command，命令名，相应功能的英文单词或单词缩写
+        [-options]，选项，可用来对命令进行控制
+        parameter，传给命令的参数
+
+查询命令帮助信息
+    --help
+    man，manual的缩写

@@ -1,0 +1,36 @@
+操作系统的发展过程
+    操作系统的概念：操作系统是一个协调、管理和控制计算机硬件资源和软件资源的控制程序
+
+    洪荒时代操作系统的发展历程
+        第一代计算机（真空管和穿孔卡片）
+        第二代计算机（晶体管和批处理系统）
+        第三代计算机（集成电路芯片和多道程序设计）
+        第四代计算机（个人计算机）
+
+    现代操作系统的发展史
+        Multics操作系统
+            MULTICS，全称“MULTiplexed Information and Computing System”
+            是Bell（贝尔实验室），MIT（麻省理工学院人工智能实验室），GE（General Electric，通用电气）联合建立的Multics操作系统
+
+        Unix的诞生问世
+
+        Windows图形操作系统的时代
+            在1990之前，Windows的开发一直是在Unix上进行的
+
+        Unix商业化
+            AT&T（美国电话电报公司）被裁定违反反垄断法，被拆分，贝尔实验室独立
+            贝尔实验室为了索取回报，将BSD告上法庭，旷日持久的官司，让他们止步不前
+
+        GNU
+            1985年，Richard Stallman发起GNU（GNU is not unix）自由操作系统，软件共享运动
+            GPL，全称（General Public License）章程协议
+            FSF，全称（Free Software Foundation）自由软件基金会
+
+        Linux的发展历程
+            1991年，芬兰人Linus Torvalds开发出Linux，是一个基于POSIX的多用户、多任务并且支持多线程和多CPU的操作系统
+            POSIX，全称Portable Operating System Interface，可移植操作系统接口
+
+
+
+
+# 去看“深入理解计算机系统”（推荐）
