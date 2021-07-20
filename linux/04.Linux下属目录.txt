@@ -2,7 +2,7 @@ Linux常见目录说明
 
     /bin（binaries），可执行二进制文件的目录
     /etc（etcetera），存放系统管理和配置文件
-    /home（），存放所有用户文件的根目录
+    /home，存放所有用户文件的根目录
     /usr（unix shared resources）
     /opt，额外安装的可选应用程序包所放置的位置
     /proc，虚拟文件系统目录，是系统内存的映射
