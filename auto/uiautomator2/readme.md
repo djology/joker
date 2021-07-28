@@ -199,27 +199,210 @@ Wait until app running
 
 Push and pull files
         
+    push a file to the device
+        # push to a folder
+        d.push("foo.txt", "/sdcard/")
+        # push and rename
+        d.push("foo.txt", "/sdcard/bar.txt")
+        # push fileobj
+        with open("foo.txt", 'rb') as f:
+            d.push(f, "/sdcard/")
+        # push and change file access mode
+        d.push("foo.sh", "/data/local/tmp", mode=0o755)
+    
+    pull a file to the device
+        d.pull("/sdcard/tmp.txt", "tmp.txt")
         
+        # FileNotFoundError will raise if the file is not found on the device
+        d.pull("/sdcard/some-file-not-exists.txt", "tmp.txt")
 
-检查并维持设备端守护进程处于运行状态
+检查并维持设备端守护进程处于运行状态（已弃用）
+
+        d.healthcheck()
+        # DeprecationWarning: Call to deprecated method healthcheck. (method: healthcheck is useless now) -- Deprecated since version 3.0.0.
 
 Auto click permission dialogs （已弃用）
+    
+    disable_popups 函数不稳定，暂不要使用，等候通知
+        d.disable_popups() # automatic skip popups
+        d.disable_popups(False) # disable automatic skip popups
+    
+    popup
+    If this method is not working on your device, you can make a pull request or create an issue to 
+    enhance this function: 
+            1. Open uiautomatorviewer.bat
+            2. Get popup hierarchy
+    
+    hierarchy
+    Now you know the button text and current package name. Make a pull request by update function 
+    disable_popups or create an issue if you are not familar with git and python. 
 
 Open Scheme
+    
+    You can do it wire adb: adb shell am start -a android.intent.action.VIEW -d "appname://appnamehost"
+    Also you can do it with python code
+        d.open_url("https://www,baidu.com")
+        d.open_url("taobao://taobao.com") # open Taobao app
+        d.open_url("appname://appnamehost")
+```
+## Basic API Usages
+```
+This part showcases how to perform common device operations
+Shell commands
 
-Basic API Usages
-    Shell commands
-    Session
-    Retrieve the device info
-    Clipboard
-    Key Events
-    Gesture interaction with the device
-    Scree-related
-    Selector
-    WatchContext
-    Watcher
-    Screenrecord
-    Image match
+    Run a short-lived shell command with a timeout protection (Default timeout 60s)
+    Note: timeout support require atx-agent >= 0.3.3
+    adb_shell function is deprecated. Use shell instead. 
+        output, exit_code = d.shell("pwd", timeout=60) # timeout 60s (Default)
+        # output: "/\n", exit_code: 0
+        # Similar to command: adb shell pwd
+        
+        # Since `shell` function return type is `namedtuple("ShellResponse", ("output", "exit_code"))`
+        # so we can do some tricks
+        output = d.shell("pwd").output
+        exit_code = d.shell("pwd").exit_code
+
+    Run a long-running shell command
+    add stream=True will return requests.models.Response object
+        r = d.shell("logcat", stream=True)
+        # r: requests.models.Response
+        deadline = time.time() + 10 # run maxium 10s
+        try: 
+            for line in r.iter_lines(): # r.iter_lines(chunk_size=512, decode_unicode=None, delimiter=None)
+                if time.time() > deadline:
+                    break
+                print("Read:", line.decode('utf-8'))
+        finally:
+            r.close() # this method must be called
+
+    Command will be terminated when r.close() called
+
+Session
+    Session represent an app lifecycle. Can be used to start app, detect app crash
+    Launch and close app
+        sess = d.session("com.netease.cloudmusic") # start 网易云音乐
+        sess.close() # 停止网易云音乐
+        sess.restart() # 冷启动网易云音乐
+    
+    Use python with to launch and close app
+        with d.session("com.netease.cloudmusic") as sess:
+            sess(text="Play").click()
+    
+    Attack to the running app
+        # launch app if not running, skip launch if already running
+        sess = d.session("com.netease.cloudmusic", attack=True)
+        
+        # raise SessionBrokenError if not running
+        sess = d.session("com.netease.cloudmusic", attack=True, strict=True)
+    
+    Detect app crash
+        # When app is still running
+        sess(text="Music").click() # operation goes normal
+        
+        # If app crash or quit
+        sess(text="Music").click() # raise SessionBrokenError
+        # other function calls under session will raise SessionBrokenError too
+        
+        # check if session is ok
+        # Warning: function name may change in the future
+        session.running() # True or False
+
+Retrieve the device info
+
+    Get basic information
+        d.info
+    Below is a possible output:
+        {
+            'currentPackageName': 'com.android.launcher3', 
+            'displayHeight': 1560, 
+            'displayRotation': 0, 
+            'displaySizeDpX': 411, 
+            'displaySizeDpY': 937, 
+            'displayWidth': 720, 
+            'productName': 'Punisher_00WW', 
+            'screenOn': True, 
+            'sdkInt': 30, 
+            'naturalOrientation': True
+        }
+    
+    Get window size
+        print(d.window_size())
+        # device upright output example: (1080, 1920)
+        # device horizontal output example: (1920, 1080)
+    
+    Get current app info. For some android devices, the output could be empty
+        print(d.app_current())
+        # Output example 1: {'activity': '.Client', 'package': 'com.netease.example', 'pid': 23710}
+        # Output example 2: {'activity': '.Client', 'package': 'com.netease.example'}
+        # Output example 3: {'activity': None, 'package': None}
+    
+    Wait activity
+        d.wait_activity(".ApiDemos", timeout=10) # default timeoput 10.0 seconds
+        # Output: true or false
+    
+    Get device serial number
+        print(d.serial)
+        # output example: 74aAEDR428Z9
+    
+    Get WLAN ip
+        print(d.wlan_ip)
+        # output example: 10.0.0.1
+    
+    Get detailed device info
+        print(d.device_info)
+    
+    Below is a possible output:
+        {
+            'udid': 'A00000P660152700116-5e:ce:73:a1:74:88-Nokia_G50', 
+            'version': '11', 
+            'serial': 'A00000P660152700116', 
+            'brand': 'Nokia', 
+            'model': 'Nokia G50', 
+            'hwaddr': '5e:ce:73:a1:74:88', 
+            'sdk': 30, 
+            'agentVersion': '0.10.0', 
+            'display': {'width': 720, 'height': 1640}, 
+            'battery': {'acPowered': False, 
+            'usbPowered': True, 
+            'wirelessPowered': False, 
+            'status': 5, 
+            'health': 2, 
+            'present': True, 
+            'level': 100, 
+            'scale': 100, 
+            'voltage': 4348, 
+            'temperature': 279, 
+            'technology': 'Li-ion'}, 
+            'memory': {'total': 5597172, 'around': '5 GB'}, 
+            'cpu': {'cores': 7, 'hardware': ''}, 
+            'arch': '', 
+            'owner': None, 
+            'presenceChangedAt': '0001-01-01T00:00:00Z', 
+            'usingBeganAt': '0001-01-01T00:00:00Z', 
+            'product': None, 
+            'provider': None
+        }
+
+Clipboard
+
+    Get of set clipboard content
+    设置粘贴板内容或获取内容
+        d.set_clipboard('text', 'label')
+        print(d.clipboard)
+
+Key Events
+
+    Turn on/of screen
+        d.screen_on() # turn on the screen
+        d.screen_off() # turn off the screen
+
+Gesture interaction with the device
+Scree-related
+Selector
+WatchContext
+Watcher
+Screenrecord
+Image match
 
 Common Issues
     Stop UiAutomator
